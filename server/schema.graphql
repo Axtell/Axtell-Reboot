@@ -1,0 +1,132 @@
+schema {
+  query: Query
+}
+
+interface Node {
+  id: NodeId!
+}
+
+interface Post implements Node {
+  id: NodeId!
+  title: String!
+  body: String!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  author: User!
+}
+
+"""
+  Combined date and time (with time zone) in [RFC 3339][0] format.
+
+  Represents a description of an exact instant on the time-line (such as the
+  instant that a user account was created).
+
+  [`DateTime` scalar][1] compliant.
+
+  See also [`chrono::DateTime`][2] for details.
+
+  [0]: https://datatracker.ietf.org/doc/html/rfc3339#section-5
+  [1]: https://graphql-scalars.dev/docs/scalars/date-time
+  [2]: https://docs.rs/chrono/latest/chrono/struct.DateTime.html
+"""
+scalar DateTime
+
+scalar NodeId
+
+type Challenge implements Node & Post {
+  id: NodeId!
+  title: String!
+  body: String!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  author: User!
+  challengeType: ChallengeType!
+  responses(first: Int, after: NodeId, last: Int, before: NodeId): ResponseConnection!
+  comments(first: Int, after: NodeId, last: Int, before: NodeId): CommentConnection!
+}
+
+type ChallengeConnection {
+  edges: [ChallengeConnectionEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ChallengeConnectionEdge {
+  node: Challenge!
+  cursor: NodeId!
+}
+
+type ChallengeType implements Node {
+  id: NodeId!
+  name: String!
+  description: String!
+}
+
+type Comment implements Node {
+  id: NodeId!
+  body: String!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  author: User!
+  post: Post!
+}
+
+type CommentConnection {
+  edges: [CommentConnectionEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CommentConnectionEdge {
+  node: Comment!
+  cursor: NodeId!
+}
+
+type PageInfo {
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+  startCursor: NodeId
+  endCursor: NodeId
+}
+
+type Query {
+  apiVersion: String!
+  node(id: NodeId!): Node
+  newestChallenges(first: Int, after: NodeId, last: Int, before: NodeId): ChallengeConnection!
+}
+
+type Response implements Node & Post {
+  id: NodeId!
+  title: String!
+  body: String!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  author: User!
+  code: String!
+  challenge: Challenge!
+  comments(first: Int, after: NodeId, last: Int, before: NodeId): CommentConnection!
+}
+
+type ResponseConnection {
+  edges: [ResponseConnectionEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ResponseConnectionEdge {
+  node: Response!
+  cursor: NodeId!
+}
+
+type User implements Node {
+  id: NodeId!
+  name: String!
+  profile: String!
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+  challenges(first: Int, after: NodeId, last: Int, before: NodeId): ChallengeConnection!
+  responses(first: Int, after: NodeId, last: Int, before: NodeId): ResponseConnection!
+  comments(first: Int, after: NodeId, last: Int, before: NodeId): CommentConnection!
+}
+
