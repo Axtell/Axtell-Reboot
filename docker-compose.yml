@@ -1,0 +1,64 @@
+x-db-config: &db_config
+  secrets:
+    - db_password
+  environment:
+    POSTGRES_USER: mego
+    # POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    POSTGRES_PASSWORD: mego
+    POSTGRES_DB: axtell
+    POSTGRES_HOST: db # only used for server
+
+services:
+  db:
+    <<: *db_config
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    networks:
+      - backend
+    volumes:
+      - db_data:/var/lib/postgresql
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    networks:
+      - backend
+    ports:
+      - 8080:8080
+
+  web:
+    image: axtell/web
+    build: ./web
+    restart: always
+    networks:
+      - frontend
+    depends_on:
+      server:
+        condition: service_healthy
+
+  server:
+    <<: *db_config
+    image: axtell/server
+    build: ./server
+    restart: always
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      db:
+        condition: service_healthy
+
+secrets:
+  db_password:
+    file: ./db_password
+
+volumes:
+  db_data:
+
+networks:
+  frontend:
+  backend:
