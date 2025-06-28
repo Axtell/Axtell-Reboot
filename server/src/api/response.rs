@@ -3,7 +3,7 @@ use juniper::{FieldResult, graphql_object};
 
 use crate::{
     api::{
-        Context, NodeId, NodeValue, Post, challenge::Challenge, comment::CommentConnection,
+        Context, NodeId, NodeValue, challenge::Challenge, comment::CommentConnection,
         post::PostValue, user::User,
     },
     models, relayify,

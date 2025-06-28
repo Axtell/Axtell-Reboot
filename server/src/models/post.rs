@@ -33,5 +33,8 @@ impl Post {
 }
 
 pub trait FromPost: Sized {
-    async fn from_post(cnx: &mut AsyncPgConnection, post: &Post) -> QueryResult<Self>;
+    fn from_post(
+        cnx: &mut AsyncPgConnection,
+        post: &Post,
+    ) -> impl Future<Output = QueryResult<Self>> + Send;
 }

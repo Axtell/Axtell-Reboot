@@ -5,6 +5,7 @@ use crate::{
     models::{self, post::FromPost},
 };
 
+#[allow(async_fn_in_trait)] // juniper relies on `async` being present in the fn def for proper codegen
 #[graphql_interface]
 #[graphql(for = [Challenge, Response], impl = NodeValue, context = Context)]
 pub trait Post: Sized {
