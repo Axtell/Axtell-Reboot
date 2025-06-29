@@ -8,7 +8,7 @@ use dotenvy::dotenv;
 
 pub type DbPool = deadpool::managed::Pool<AsyncDieselConnectionManager<AsyncPgConnection>>;
 
-fn build_pool() -> Result<DbPool> {
+pub fn build_pool() -> Result<DbPool> {
     let config = AsyncDieselConnectionManager::<diesel_async::AsyncPgConnection>::new({
         dotenv()?;
         dotenvy::var("DATABASE_URL")?
@@ -16,4 +16,4 @@ fn build_pool() -> Result<DbPool> {
     Ok(Pool::builder(config).build()?)
 }
 
-pub static DB_POOL: LazyLock<DbPool> = LazyLock::new(|| build_pool().unwrap());
+// pub static DB_POOL: LazyLock<DbPool> = LazyLock::new(|| build_pool().unwrap());

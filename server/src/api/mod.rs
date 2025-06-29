@@ -6,7 +6,7 @@ use crate::{
         post::PostValue,
         relay::{build_connection, relay_connection_closure_args},
     },
-    db::DbPool,
+    db::{DbPool, build_pool},
     models::{self, SchemaModel, SchemaTable},
 };
 use base64::{Engine, prelude::BASE64_URL_SAFE};
@@ -106,6 +106,12 @@ pub struct Context {
     pub db: DbPool,
 }
 
+impl Context {
+    pub fn try_new() -> anyhow::Result<Self> {
+        Ok(Self { db: build_pool()? })
+    }
+}
+
 impl juniper::Context for Context {}
 
 #[derive(Debug)]
@@ -165,3 +171,7 @@ fn decode_id(id: &ID) -> FieldResult<(String, i32)> {
 }
 
 pub type Schema = RootNode<'static, Query, EmptyMutation<Context>, EmptySubscription<Context>>;
+
+pub fn schema() -> Schema {
+    Schema::new(Query, EmptyMutation::new(), EmptySubscription::new())
+}

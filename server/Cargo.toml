@@ -25,6 +25,7 @@ async-lock = "3.4.0"
 juniper = { version = "0.16.2", features = ["chrono", "schema-language"] }
 juniper_actix = "0.6.0"
 paste = "1.0.15"
+actix-cors = "0.7.1"
 
 [package.metadata.bin]
 diesel_cli = { version = "2.2.10", default-features = false, features = [
