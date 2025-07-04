@@ -91,7 +91,7 @@ impl Response {
 
     pub async fn author<'c>(&self, ctx: &'c Context) -> FieldResult<User> {
         let user_id = self.fetch_from_db(ctx).await?.post.user_id;
-        Ok(User::new(user_id))
+        Ok(ctx.loader.users.try_load(user_id).await??.into())
     }
 
     pub async fn code<'c>(&self, ctx: &'c Context) -> FieldResult<&String> {
@@ -100,7 +100,7 @@ impl Response {
 
     pub async fn challenge<'c>(&self, ctx: &'c Context) -> FieldResult<Challenge> {
         let challenge_id = self.fetch_from_db(ctx).await?.data.challenge_id;
-        Ok(Challenge::new(challenge_id))
+        Ok(ctx.loader.challenges.try_load(challenge_id).await??.into())
     }
 
     pub async fn comments<'c>(

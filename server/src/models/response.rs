@@ -7,7 +7,15 @@ use diesel::{
 use diesel_async::AsyncPgConnection;
 
 #[derive(
-    Queryable, Selectable, Identifiable, AsChangeset, Insertable, Associations, Debug, PartialEq,
+    Queryable,
+    Selectable,
+    Identifiable,
+    AsChangeset,
+    Insertable,
+    Associations,
+    Debug,
+    PartialEq,
+    Clone,
 )]
 #[diesel(belongs_to(Post))]
 #[diesel(belongs_to(Challenge))]
@@ -19,7 +27,7 @@ pub struct ResponseData {
     pub code: String,
 }
 
-#[derive(Queryable, Selectable, Debug, PartialEq)]
+#[derive(Queryable, Selectable, Debug, PartialEq, Clone)]
 pub struct Response {
     #[diesel(embed)]
     pub post: Post,

@@ -71,7 +71,7 @@ impl Comment {
 
     pub async fn author<'c>(&self, ctx: &'c Context) -> FieldResult<User> {
         let user_id = self.fetch_from_db(ctx).await?.user_id;
-        Ok(User::new(user_id))
+        Ok(ctx.loader.users.try_load(user_id).await??.into())
     }
 
     pub async fn post<'c>(&self, ctx: &'c Context) -> FieldResult<PostValue> {

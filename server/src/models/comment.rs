@@ -8,7 +8,15 @@ use diesel::{
 use diesel_async::AsyncPgConnection;
 
 #[derive(
-    Queryable, Selectable, Identifiable, AsChangeset, Insertable, Associations, Debug, PartialEq,
+    Queryable,
+    Selectable,
+    Identifiable,
+    AsChangeset,
+    Insertable,
+    Associations,
+    Debug,
+    PartialEq,
+    Clone,
 )]
 #[diesel(belongs_to(User))]
 #[diesel(belongs_to(Post))]

@@ -1,7 +1,7 @@
 use crate::schema::users;
 use diesel::prelude::*;
 
-#[derive(Queryable, Selectable, Identifiable, AsChangeset, Insertable, Debug, PartialEq)]
+#[derive(Queryable, Selectable, Identifiable, AsChangeset, Insertable, Debug, PartialEq, Clone)]
 #[diesel(table_name = users)]
 pub struct User {
     pub id: i32,

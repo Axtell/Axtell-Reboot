@@ -26,6 +26,12 @@ juniper = { version = "0.16.2", features = ["chrono", "schema-language"] }
 juniper_actix = "0.6.0"
 paste = "1.0.15"
 actix-cors = "0.7.1"
+dataloader = "0.18.0"
+futures = "0.3.31"
+actix-web-httpauth = "0.8.2"
+alcoholic_jwt = "4091.0.0"
+derive_more = "2.0.1"
+reqwest = { version = "0.12.22", features = ["brotli", "deflate", "gzip", "json", "zstd"] }
 
 [package.metadata.bin]
 diesel_cli = { version = "2.2.10", default-features = false, features = [

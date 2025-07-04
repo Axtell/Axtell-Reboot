@@ -46,7 +46,7 @@ pub trait Post: Sized {
 impl PostValue {
     pub async fn try_from_db_id<'c>(db_id: i32, ctx: &'c Context) -> FieldResult<Self> {
         let mut cnx = ctx.db.get().await?;
-        let post = models::Post::find(&mut cnx, db_id).await?;
+        let post = ctx.loader.posts.try_load(db_id).await??;
         if let Ok(m) = models::Challenge::from_post(&mut cnx, &post).await {
             return Ok(Self::from(Challenge::from_model(m)));
         } else if let Ok(m) = models::Response::from_post(&mut cnx, &post).await {

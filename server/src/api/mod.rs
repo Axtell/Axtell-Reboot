@@ -6,7 +6,7 @@ use crate::{
         post::PostValue,
         relay::{build_connection, relay_connection_closure_args},
     },
-    db::{DbPool, build_pool},
+    db::{DB_POOL, DbPool, Loader, Repository},
     models::{self, SchemaModel, SchemaTable},
 };
 use base64::{Engine, prelude::BASE64_URL_SAFE};
@@ -103,12 +103,16 @@ impl From<SchemaModel> for NodeValue {
 }
 
 pub struct Context {
+    pub loader: Loader,
     pub db: DbPool,
 }
 
 impl Context {
     pub fn try_new() -> anyhow::Result<Self> {
-        Ok(Self { db: build_pool()? })
+        Ok(Self {
+            loader: Loader::new(&DB_POOL),
+            db: DB_POOL.clone(),
+        })
     }
 }
 
