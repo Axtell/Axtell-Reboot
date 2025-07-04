@@ -1,14 +1,22 @@
 use actix_cors::Cors;
 use actix_web::{
-    App, Error, HttpRequest, HttpResponse, HttpServer, Responder, get,
+    App, Error, HttpRequest, HttpResponse, HttpServer, Responder,
+    dev::ServiceRequest,
+    get,
     http::header,
     middleware, post,
     web::{self, Data},
 };
+use actix_web_httpauth::extractors::AuthenticationError;
+use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
+use actix_web_httpauth::middleware::HttpAuthentication;
 use dotenvy;
 use juniper_actix::{graphiql_handler, graphql_handler, playground_handler};
 
 use crate::api::{Context, Schema, schema};
+
+mod auth;
+mod errors;
 
 #[get("/")]
 async fn homepage() -> impl Responder {
@@ -42,8 +50,29 @@ async fn graphiql() -> Result<HttpResponse, Error> {
     graphiql_handler("/api/graphql", None).await
 }
 
+async fn validator(
+    req: ServiceRequest,
+    credentials: BearerAuth,
+) -> Result<ServiceRequest, (Error, ServiceRequest)> {
+    let config = req
+        .app_data::<Config>()
+        .map(|data| data.clone())
+        .unwrap_or_else(Default::default);
+    match auth::validate_token(credentials.token()).await {
+        Ok(res) => {
+            if res == true {
+                Ok(req)
+            } else {
+                Err((AuthenticationError::from(config).into(), req))
+            }
+        }
+        Err(_) => Err((AuthenticationError::from(config).into(), req)),
+    }
+}
+
 pub async fn serve() -> std::io::Result<()> {
     HttpServer::new(|| {
+        let auth = HttpAuthentication::bearer(validator);
         App::new()
             .app_data(Data::new(schema()))
             .wrap(
@@ -57,6 +86,7 @@ pub async fn serve() -> std::io::Result<()> {
             )
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
+            .wrap(auth)
             .service(graphql)
             .service(graphiql)
             .service(playground)
